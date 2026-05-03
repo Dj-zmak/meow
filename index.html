@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.1); }
+        body { 
+            background: #050505; color: white; font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
+        }
+        .container {
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            width: 400px; box-shadow: 0 0 20px rgba(0,242,255,0.2);
+        }
+        h2 { text-align: center; color: var(--neon); text-transform: uppercase; letter-spacing: 2px; }
+        input {
+            width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--neon); border-radius: 8px; color: white; outline: none;
+        }
+        button {
+            width: 100%; padding: 12px; background: var(--neon); border: none;
+            border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { box-shadow: 0 0 15px var(--neon); transform: scale(1.02); }
+        .log-box {
+            margin-top: 20px; background: rgba(0,0,0,0.5); padding: 10px;
+            border-radius: 10px; height: 200px; overflow-y: auto; font-size: 13px; border-left: 3px solid var(--neon);
+        }
+        .status { text-align: center; font-size: 12px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Honeygain Bot ʚ♡⃛ɞ</h2>
+        <div class="status" id="botStatus">Status: Offline</div>
+        <input type="email" id="email" placeholder="Enter Email">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="startBot()">Deploy Bot</button>
+        
+        <div class="log-box" id="logs">
+            [System] Waiting for credentials...
+        </div>
+    </div>
+
+    <script>
+        async function startBot() {
+            const formData = new FormData();
+            formData.append('email', document.getElementById('email').value);
+            formData.append('password', document.getElementById('password').value);
+            
+            await fetch('/start', { method: 'POST', body: formData });
+            alert("Bot Triggered Successfully!");
+        }
+
+        async function updateLogs() {
+            const res = await fetch('/logs');
+            const data = await res.json();
+            const logBox = document.getElementById('logs');
+            document.getElementById('botStatus').innerText = data.active ? "Status: Online (3h Cycle)" : "Status: Offline";
+            logBox.innerHTML = data.logs.map(log => `<div>${log}</div>`).reverse().join('');
+        }
+        setInterval(updateLogs, 3000);
+    </script>
+</body>
+</html>
